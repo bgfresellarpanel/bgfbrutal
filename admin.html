@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Add New User</title>
+  <title>BGF Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -52,6 +52,7 @@
       padding: 0 12px;
     }
 
+    /* Mobile First Header */
     .header {
       background-color: var(--white);
       box-shadow: 0 2px 15px var(--blue-shadow);
@@ -115,6 +116,7 @@
       width: 100%;
     }
 
+    /* Mobile Responsive Sidebar */
     .sidebar {
       position: fixed;
       top: 60px;
@@ -159,6 +161,7 @@
       color: var(--primary);
     }
 
+    /* Main Content */
     .main-content {
       margin-top: 65px;
       margin-left: 0;
@@ -173,24 +176,6 @@
       padding: 20px;
       margin-bottom: 20px;
       border: 1px solid #d0e1fd;
-    }
-
-    .credit-badge-box {
-      background: linear-gradient(135deg, rgba(0, 119, 255, 0.1), rgba(0, 180, 216, 0.15));
-      border: 1px solid var(--success);
-      padding: 12px 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 600;
-      color: var(--dark);
-    }
-
-    .credit-badge-box span {
-      color: var(--primary);
-      font-size: 1.2rem;
     }
 
     .form-group {
@@ -238,7 +223,7 @@
     .form-check {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .form-check-input {
@@ -251,14 +236,13 @@
     .form-check-label {
       font-weight: 500;
       color: var(--dark);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       cursor: pointer;
     }
 
     .radio-group {
       display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
+      gap: 20px;
     }
 
     .form-result {
@@ -293,11 +277,21 @@
       font-size: 0.85rem;
     }
 
+    /* Desktop View adjustments */
     @media (min-width: 768px) {
-      .sidebar { left: 0; }
-      .sidebar.active { transform: translateX(-260px); }
-      .main-content { margin-left: 260px; padding: 25px; }
-      .main-content.full-width { margin-left: 0; }
+      .sidebar {
+        left: 0;
+      }
+      .sidebar.active {
+        transform: translateX(-260px);
+      }
+      .main-content {
+        margin-left: 260px;
+        padding: 25px;
+      }
+      .main-content.full-width {
+        margin-left: 0;
+      }
     }
   </style>
 </head>
@@ -315,37 +309,49 @@
       </div>
       <div class="header-actions">
         <div class="user-avatar">
-          <img src="./logo.png" alt="Admin" width="35" height="35" style="border: 2px solid var(--primary); border-radius: 50%;" onerror="this.src='logo.png'">
+          <img src="/logo.png" alt="Admin" width="35" height="35" style="border: 2px solid var(--primary); border-radius: 50%;">
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Sidebar: Notification option removed -->
   <aside class="sidebar" id="sidebar">
     <ul class="sidebar-menu">
       <li class="sidebar-item">
-        <a href="./index.html" class="sidebar-link">
+        <a href="index.html" class="sidebar-link">
           <i class="fas fa-tachometer-alt"></i>
           <span>Dashboard</span>
         </a>
       </li>
       <li class="sidebar-item">
-        <a href="./admin.html" class="sidebar-link active">
+        <a href="admin.html" class="sidebar-link active">
           <i class="fas fa-user-plus"></i>
           <span>Add User</span>
         </a>
       </li>
       <li class="sidebar-item">
-        <a href="./dashboard.html" class="sidebar-link">
+        <a href="dashboard.html" class="sidebar-link">
           <i class="fas fa-users-cog"></i>
           <span>Manage Users</span>
         </a>
       </li>
       <li class="sidebar-item">
-        <a href="./settings.html" class="sidebar-link">
+        <a href="reseller.html" class="sidebar-link">
+          <i class="fas fa-user-shield"></i>
+          <span>Add Reseller</span>
+        </a>
+      </li>
+      <!-- Manage Resellers Link Added Here -->
+      <li class="sidebar-item">
+        <a href="manage-resellers.html" class="sidebar-link">
+          <i class="fas fa-users-gear"></i>
+          <span>Manage Resellers</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="settings.html" class="sidebar-link">
           <i class="fas fa-cog"></i>
-          <span>Profile</span>
+          <span>Settings</span>
         </a>
       </li>
     </ul>
@@ -356,13 +362,7 @@
       <div id="maintenanceWarning" class="maintenance-warning" style="display: none;">
         <i class="fas fa-exclamation-triangle"></i> Site is currently in Maintenance Mode.
       </div>
-
       <div class="card">
-        <div class="credit-badge-box">
-          <div><i class="fas fa-coins" style="color: var(--warning); margin-right: 5px;"></i> Available Credit:</div>
-          <span id="availableCredit">0 Credits</span>
-        </div>
-
         <form id="addUserForm">
           <div class="form-group">
             <label for="username" class="label">Username</label>
@@ -380,20 +380,14 @@
           </div>
           
           <div class="form-group">
-            <label for="creditCost" class="label">Validity / Credits (1 Credit = 1 Day)</label>
-            <select id="creditCost" class="form-control" required>
-              <option value="1">1 Credit (1 Day)</option>
-              <option value="3">3 Credits (3 Days)</option>
-              <option value="7">7 Credits (7 Days)</option>
-              <option value="15">15 Credits (15 Days)</option>
-              <option value="30">30 Credits (30 Days)</option>
-            </select>
+            <label for="validity" class="label">Valid Until</label>
+            <input type="datetime-local" id="validity" class="form-control" required>
           </div>
           
           <div class="form-group">
             <label class="label">Status</label>
             <div class="form-check">
-              <input type="checkbox" id="statusCheckbox" class="form-check-input" checked>
+              <input type="checkbox" id="statusCheckbox" class="form-check-input">
               <label for="statusCheckbox" class="form-check-label">Active User</label>
             </div>
           </div>
@@ -405,11 +399,24 @@
                 <input type="radio" id="device1" name="access" value="1" class="form-check-input" checked>
                 <label for="device1" class="form-check-label">1 Device</label>
               </div>
+              <div class="form-check">
+                <input type="radio" id="deviceUnlimited" name="access" value="∞" class="form-check-input">
+                <label for="deviceUnlimited" class="form-check-label">Unlimited</label>
+              </div>
             </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="credit" class="label">Seller's Credit</label>
+            <select id="credit" class="form-control" required>
+              <option value="10">10 Credits</option>
+              <option value="20">20 Credits</option>
+              <option value="30">30 Credits</option>
+            </select>
           </div>
 
           <button type="submit" class="btn btn-primary btn-block">
-            <i class="fas fa-user-plus"></i> Add User & Deduct Credit
+            <i class="fas fa-user-plus"></i> Add User
           </button>
           
           <div id="result" class="form-result"></div>
@@ -449,97 +456,48 @@
       }
     });
 
-    const rawReseller = localStorage.getItem("loggedInReseller") || sessionStorage.getItem("loggedInReseller") || "Admin";
-    const currentReseller = rawReseller.replace(/\./g, '_');
-    
-    // Use the username saved on the Profile page for createdBy.
-    let profileUsername = "";
-    let profileUsernameLoaded = false;
-    const profileUsernameRef = ref(db, "BgfUpdateInformation/Reseller_Profile/username");
-    onValue(profileUsernameRef, (snapshot) => {
-      profileUsername = String(snapshot.val() || "").trim();
-      profileUsernameLoaded = true;
-    }, (error) => {
-      console.error("Could not load Profile username:", error);
-      profileUsernameLoaded = true;
-    });
-
-    const adminCreditRef = ref(db, `resellers/${currentReseller}/balance`);
-    let currentAvailableCredits = 0;
-    const availableCreditEl = document.getElementById('availableCredit');
-
-    onValue(adminCreditRef, (snapshot) => {
-      if (snapshot.exists()) {
-        currentAvailableCredits = parseInt(snapshot.val(), 10) || 0;
-        availableCreditEl.textContent = currentAvailableCredits + " Credits";
-      } else {
-        currentAvailableCredits = 0;
-        availableCreditEl.textContent = "0 Credits";
-      }
-    });
-
     const addUserForm = document.getElementById('addUserForm');
     const resultEl = document.getElementById('result');
 
-    addUserForm.addEventListener('submit', async (e) => {
+    addUserForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
-      
-      const selectedDevice = document.querySelector('input[name="access"]:checked').value;
-      const creditCost = parseInt(document.getElementById('creditCost').value, 10);
+      const validity = document.getElementById('validity').value;
       const isActive = document.getElementById('statusCheckbox').checked;
+      const credit = document.getElementById('credit').value;
+      const access = document.querySelector('input[name="access"]:checked').value;
       const status = isActive ? 'active' : 'inactive';
       
-      if (!username || !password) {
+      if (!username || !password || !validity) {
         showResult('Please fill all fields', 'error');
         return;
       }
 
-      if (!profileUsernameLoaded) {
-        showResult('Please wait: loading your Profile username...', 'error');
-        return;
-      }
-
-      if (currentAvailableCredits < creditCost) {
-        showResult('Error: Insufficient credits to create user!', 'error');
-        return;
-      }
-
-      const daysToAdd = creditCost; 
-      const validityDate = new Date();
-      validityDate.setDate(validityDate.getDate() + daysToAdd);
-
+      const date = new Date(validity);
       const pad = n => n.toString().padStart(2, '0');
-      const formattedDate = `${pad(validityDate.getDate())}-${pad(validityDate.getMonth() + 1)}-${validityDate.getFullYear()} ${pad(validityDate.getHours())}:${pad(validityDate.getMinutes())}`;
+      const formattedDate = `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
       
       const now = new Date();
       const rgtime = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
-      try {
-        const userRef = ref(db, `AllUserInformation/${username}`);
-        await set(userRef, {
-          username: username,
-          password: password,
-          status: status,
-          validity: formattedDate,
-          access: selectedDevice,
-          device: 'null',
-          rgtime: rgtime,
-          creditUsed: creditCost,
-          createdBy: profileUsername || rawReseller 
-        });
-
-        const newCreditBalance = currentAvailableCredits - creditCost;
-        await set(adminCreditRef, newCreditBalance);
-
-        showResult(`User added successfully! ${creditCost} Credit(s) deducted.`, 'success');
+      const userRef = ref(db, `AllUserInformation/${username}`);
+      set(userRef, {
+        username: username,
+        password: password,
+        status: status,
+        validity: formattedDate,
+        access: access,
+        device: 'null',
+        rgtime: rgtime,
+        credit: credit
+      }).then(() => {
+        showResult('User added successfully!', 'success');
         addUserForm.reset();
-
-      } catch (error) {
+      }).catch((error) => {
         showResult('Error: ' + error.message, 'error');
-      }
+      });
     });
 
     function showResult(message, type) {
@@ -548,13 +506,14 @@
       setTimeout(() => {
         resultEl.textContent = '';
         resultEl.className = 'form-result';
-      }, 4000);
+      }, 3000);
     }
 
     const maintenanceWarning = document.getElementById('maintenanceWarning');
     const settingsRef = ref(db, 'BgfUpdateInformation/maintenanceMode');
     onValue(settingsRef, (snapshot) => {
-      if (snapshot.val()) {
+      const inMaintenance = snapshot.val();
+      if (inMaintenance) {
         maintenanceWarning.style.display = 'block';
       } else {
         maintenanceWarning.style.display = 'none';

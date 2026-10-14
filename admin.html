@@ -342,6 +342,12 @@
           <span>Manage Users</span>
         </a>
       </li>
+      <li class="sidebar-item">
+        <a href="./settings.html" class="sidebar-link">
+          <i class="fas fa-cog"></i>
+          <span>Profile</span>
+        </a>
+      </li>
     </ul>
   </aside>
 
@@ -446,6 +452,18 @@
     const rawReseller = localStorage.getItem("loggedInReseller") || sessionStorage.getItem("loggedInReseller") || "Admin";
     const currentReseller = rawReseller.replace(/\./g, '_');
     
+    // Use the username saved on the Profile page for createdBy.
+    let profileUsername = "";
+    let profileUsernameLoaded = false;
+    const profileUsernameRef = ref(db, "BgfUpdateInformation/Reseller_Profile/username");
+    onValue(profileUsernameRef, (snapshot) => {
+      profileUsername = String(snapshot.val() || "").trim();
+      profileUsernameLoaded = true;
+    }, (error) => {
+      console.error("Could not load Profile username:", error);
+      profileUsernameLoaded = true;
+    });
+
     const adminCreditRef = ref(db, `resellers/${currentReseller}/balance`);
     let currentAvailableCredits = 0;
     const availableCreditEl = document.getElementById('availableCredit');
@@ -479,6 +497,11 @@
         return;
       }
 
+      if (!profileUsernameLoaded) {
+        showResult('Please wait: loading your Profile username...', 'error');
+        return;
+      }
+
       if (currentAvailableCredits < creditCost) {
         showResult('Error: Insufficient credits to create user!', 'error');
         return;
@@ -505,7 +528,7 @@
           device: 'null',
           rgtime: rgtime,
           creditUsed: creditCost,
-          createdBy: rawReseller 
+          createdBy: profileUsername || rawReseller 
         });
 
         const newCreditBalance = currentAvailableCredits - creditCost;
@@ -529,7 +552,7 @@
     }
 
     const maintenanceWarning = document.getElementById('maintenanceWarning');
-    const settingsRef = ref(db, 'settings/maintenanceMode');
+    const settingsRef = ref(db, 'BgfUpdateInformation/maintenanceMode');
     onValue(settingsRef, (snapshot) => {
       if (snapshot.val()) {
         maintenanceWarning.style.display = 'block';

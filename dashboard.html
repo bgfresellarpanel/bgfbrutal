@@ -547,6 +547,12 @@
           <span>Manage Users</span>
         </a>
       </li>
+      <li class="sidebar-item">
+        <a href="./settings.html" class="sidebar-link">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </a>
+      </li>
     </ul>
   </aside>
 
@@ -713,38 +719,61 @@ document.getElementById('confirmResetBtn').addEventListener('click', function() 
         });
 });
 
-    function loadUsers() {
+    async function loadUsers() {
       const usersRef = ref(db, "AllUserInformation");
-      get(usersRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const rawData = snapshot.val();
-          const filteredUsers = {};
-          
-          // বর্তমান লগইন থাকা রিসেলারের ইমেইল/ইউজারনেম রিড করা
-          const loggedInReseller = (localStorage.getItem("loggedInReseller") || sessionStorage.getItem("loggedInReseller") || "").trim().toLowerCase();
+      try {
+        const snapshot = await get(usersRef);
+        const rawData = snapshot.val() || {};
+        const filteredUsers = {};
 
-          Object.entries(rawData).forEach(([username, userVal]) => {
-            if (userVal && typeof userVal === 'object') {
-              const creator = (userVal.createdBy || userVal.parentCreator || '').trim().toLowerCase();
-              
-              // শুধুমাত্র যদি ইউজারের ক্রিয়েটর এবং লগইন থাকা রিসেলারের আইডি হুবহু মিলে যায়
-              if (loggedInReseller && creator === loggedInReseller) {
-                filteredUsers[username] = userVal;
-              }
+        const loggedInReseller = (
+          localStorage.getItem("loggedInReseller") ||
+          sessionStorage.getItem("loggedInReseller") ||
+          ""
+        ).trim().toLowerCase();
+
+        // The Profile username is now stored in createdBy for newly created users.
+        let profileUsername = "";
+        try {
+          const profileSnapshot = await get(ref(db, "BgfUpdateInformation/Reseller_Profile/username"));
+          profileUsername = String(profileSnapshot.val() || "").trim().toLowerCase();
+        } catch (profileError) {
+          console.error("Could not read Profile username:", profileError);
+        }
+
+        const allowedCreators = [loggedInReseller, profileUsername].filter(Boolean);
+
+        Object.entries(rawData).forEach(([username, userVal]) => {
+          if (!userVal || typeof userVal !== "object") return;
+
+          const creator = String(userVal.createdBy || userVal.parentCreator || "").trim().toLowerCase();
+          if (creator && allowedCreators.includes(creator)) {
+            filteredUsers[username] = userVal;
+            return;
+          }
+
+          // Support older nested records where the creator may be the parent key.
+          Object.entries(userVal).forEach(([nestedUsername, nestedUser]) => {
+            if (!nestedUser || typeof nestedUser !== "object") return;
+            const nestedCreator = String(
+              nestedUser.createdBy || nestedUser.parentCreator || username
+            ).trim().toLowerCase();
+
+            if (allowedCreators.includes(nestedCreator)) {
+              filteredUsers[nestedUsername] = nestedUser;
             }
           });
+        });
 
-          allUsers = filteredUsers;
-          renderUsers(allUsers);
-          updateStats(allUsers);
-        } else {
-          userListEl.innerHTML = '<div style="text-align:center; color:var(--gray); font-size:14px;">No users found.</div>';
-          updateStats({});
-        }
-      }).catch((error) => {
-
-        userListEl.innerHTML = `<div style="color:var(--danger); text-align:center; font-size:14px;">Error: ${error.message}</div>`;
-      });
+        allUsers = filteredUsers;
+        renderUsers(allUsers);
+        updateStats(allUsers);
+      } catch (error) {
+        console.error("Failed to load AllUserInformation:", error);
+        userListEl.innerHTML = `<div style="color:var(--danger); text-align:center; font-size:14px;">Error loading users: ${error.message}</div>`;
+        allUsers = {};
+        updateStats({});
+      }
     }
 
     function updateStats(users) {

@@ -387,6 +387,12 @@
           <span>Manage Users</span>
         </a>
       </li>
+      <li class="sidebar-item">
+        <a href="settings.html" class="sidebar-link">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </a>
+      </li>
     </ul>
   </aside>
 
@@ -426,7 +432,7 @@
 
   <script type="module">
     import { db } from "./firebase-config.js";
-    import { ref, onValue } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+    import { ref, onValue, get } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
 
     const sidebarToggle = document.getElementById('sidebarToggle');
     const sidebar = document.getElementById('sidebar');
@@ -448,8 +454,21 @@ if (!loggedInReseller) {
 
     // ইউজার লিস্ট লোড ও ফিল্টারিং
   const usersRef = ref(db, 'AllUserInformation/');
-  onValue(usersRef, (snapshot) => {
+  onValue(usersRef, async (snapshot) => {
     const data = snapshot.val();
+
+    // Profile username is used in createdBy for newly created users.
+    // Keep login ID as a fallback for older records created before this change.
+    let profileUsername = "";
+    try {
+      const profileSnapshot = await get(ref(db, "BgfUpdateInformation/Reseller_Profile/username"));
+      profileUsername = String(profileSnapshot.val() || "").trim();
+    } catch (error) {
+      console.error("Could not load Profile username:", error);
+    }
+    const creatorIds = [loggedInReseller, profileUsername]
+      .map(value => String(value || "").trim().toLowerCase())
+      .filter(Boolean);
       let total = 0, active = 0, inactive = 0;
       const userListEl = document.getElementById('userList');
 
@@ -472,8 +491,9 @@ if (!loggedInReseller) {
         usersArray.forEach(user => {
           const creator = user.createdBy || user.parentCreator || 'Unknown';
 
-          if (loggedInReseller && creator.toLowerCase() !== loggedInReseller.toLowerCase()) {
-            return; 
+          const normalizedCreator = String(creator || "").trim().toLowerCase();
+          if (creatorIds.length && !creatorIds.includes(normalizedCreator)) {
+            return;
           }
 
           total++;

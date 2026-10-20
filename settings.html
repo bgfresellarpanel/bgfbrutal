@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base Styles & Blue Animated Theme Variables */
+    :root {
+      --primary: #0077ff;
+      --secondary: #0043a8;
+      --success: #00b4d8;
+      --danger: #ff477e;
+      --warning: #ffb703;
+      --info: #48cae4;
+      --light: #f0f8ff;
+      --dark: #03045e;
+      --gray: #6c757d;
+      --white: #ffffff;
+      --blue-bg: #f4f8ff;
+      --blue-shadow: rgba(0, 119, 255, 0.2);
+    }
+
+    /* Background Gradient Animation */
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: all 0.3s ease-in-out;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(-45deg, #f0f4ff, #e2ecff, #f8fbff, #eef4ff);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+
+    /* Header Styles with Glow */
+    .header {
+      background-color: var(--white);
+      box-shadow: 0 4px 20px var(--blue-shadow);
+      padding: 15px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--secondary);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    /* Button Styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      background-color: transparent;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px var(--blue-shadow);
+    }
+
+    .btn-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: var(--light);
+      color: var(--primary);
+      padding: 0;
+    }
+
+    .btn-icon:hover {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--white);
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      bottom: 0;
+      width: 250px;
+      background-color: var(--white);
+      box-shadow: 4px 0 20px var(--blue-shadow);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 900;
+      overflow-y: auto;
+    }
+
+    .sidebar.active {
+      transform: translateX(-250px);
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 20px 0;
+    }
+
+    .sidebar-item {
+      margin-bottom: 8px;
+      padding: 0 15px;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      color: var(--gray);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      gap: 12px;
+      font-weight: 500;
+    }
+
+    .sidebar-link:hover, .sidebar-link.active {
+      background: linear-gradient(135deg, rgba(0, 119, 255, 0.1), rgba(0, 67, 168, 0.15));
+      color: var(--primary);
+      transform: translateX(6px);
+    }
+
+    /* Main Content Styles */
+    .main-content {
+      margin-top: 70px;
+      margin-left: 250px;
+      padding: 30px;
+      transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .main-content.full-width {
+      margin-left: 0;
+    }
+
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--dark);
+    }
+
+    .page-title i {
+      color: var(--primary);
+    }
+
+    /* Card Styles */
+    .card {
+      background-color: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 6px 20px var(--blue-shadow);
+      padding: 25px;
+      margin-bottom: 25px;
+      border: 1px solid #d0e1fd;
+      animation: fadeInCard 0.6s ease forwards;
+    }
+
+    @keyframes fadeInCard {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e2ecff;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h2 i {
+      color: var(--primary);
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #bde0fe;
+      border-radius: 8px;
+      font-size: 14px;
+      background-color: #f8fbff;
+      transition: all 0.3s ease;
+      color: var(--dark);
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(0, 119, 255, 0.15);
+      background-color: var(--white);
+    }
+
+    /* Form Check Toggle Switch */
+    .form-check.form-switch {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+    }
+
+    .form-check.form-switch .form-check-input {
+        appearance: none;
+        width: 48px;
+        height: 24px;
+        background-color: #d0e1fd;
+        border-radius: 24px;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .form-check.form-switch .form-check-input::before {
+        content: '';
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background-color: var(--white);
+        top: 3px;
+        left: 3px;
+        transition: transform 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-check.form-switch .form-check-input:checked {
+        background-color: var(--primary);
+    }
+
+    .form-check.form-switch .form-check-input:checked::before {
+        transform: translateX(24px);
+    }
+
+    .form-check-label {
+      font-weight: 500;
+      color: var(--dark);
+      cursor: pointer;
+    }
+
+    /* Result Message */
+    .form-result {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .form-result.success {
+      background-color: rgba(0, 180, 216, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(0, 180, 216, 0.3);
+    }
+
+    .form-result.error {
+      background-color: rgba(255, 71, 126, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(255, 71, 126, 0.3);
+    }
+
+    /* Avatar Styles */
+    .user-avatar img {
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      border-radius: 50%;
+    }
+
+    /* Save Button */
+    .save-btn {
+      margin-top: 10px;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-250px);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-left">
+        <button class="btn btn-icon" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="header-title">
+          <i class="fas fa-cog"></i>
+          <span>Profile</span>
+        </h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-icon">
+          <i class="fas fa-bell"></i>
+        </button>
+        <div class="user-avatar">
+          <img src="/logo.png" alt="Admin" width="40" height="40" class="rounded-circle">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <ul class="sidebar-menu">
+      <li class="sidebar-item">
+        <a href="index.html" class="sidebar-link">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="admin.html" class="sidebar-link">
+          <i class="fas fa-user-plus"></i>
+          <span>Add User</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="dashboard.html" class="sidebar-link">
+          <i class="fas fa-users-cog"></i>
+          <span>Manage Users</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="settings.html" class="sidebar-link active">
+          <i class="fas fa-cog"></i>
+          <span>Profile</span>
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+    <div class="container">
+      <h1 class="page-title">
+        <i class="fas fa-cog"></i>
+        General Profile
+      </h1>
+      
+      <div class="card">
+        <h2><i class="fas fa-sliders-h"></i> Profile</h2>
+        <div class="form-group">
+          <label for="usernameInput" class="label">Username</label>
+          <input type="text" id="usernameInput" class="form-control" placeholder="Enter Username" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label for="linkInput" class="label">Link</label>
+          <input type="url" id="linkInput" class="form-control" placeholder="Enter Link">
+        </div>
+
+        <button id="saveSettingsBtn" type="button" class="btn btn-primary save-btn">
+          <i class="fas fa-save" style="margin-right: 8px;"></i> Save Profile
+        </button>
+
+        <div id="settingsResult" class="form-result" role="status" aria-live="polite"></div>
+      </div>
+
+      <div class="card" id="logoutCard">
+        <h2><i class="fas fa-sign-out-alt"></i> Account</h2>
+        <p style="margin-bottom: 16px;">Log out of this device and return to the login page.</p>
+        <button id="logoutBtn" type="button" class="btn btn-danger" style="background:#dc3545;color:#fff;border:0;padding:12px 18px;border-radius:6px;cursor:pointer;">
+          <i class="fas fa-sign-out-alt" style="margin-right:8px;"></i> Logout
+        </button>
+        <div id="logoutResult" class="form-result" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from "./firebase-config.js";
+    import { ref, onValue, update } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+
+    // Logout: clear the same session flag checked by the dashboard pages.
+    const logoutBtn = document.getElementById('logoutBtn');
+    const logoutResultEl = document.getElementById('logoutResult');
+
+    logoutBtn.addEventListener('click', () => {
+      const confirmed = window.confirm('Are you sure you want to log out?');
+      if (!confirmed) return;
+
+      try {
+        localStorage.removeItem('loggedInReseller');
+        sessionStorage.removeItem('loggedInReseller');
+        logoutResultEl.textContent = 'Logged out. Redirecting to login page...';
+        window.location.replace('index.html');
+      } catch (error) {
+        logoutResultEl.textContent = 'Logout failed: ' + (error?.message || 'Could not clear the login session.');
+      }
+    });
+
+    // Toggle sidebar
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      mainContent.classList.toggle('full-width');
+    });
+
+    // Per-account profile settings.
+    // loggedInReseller should contain the username/ID of the account that is currently logged in.
+    const usernameInput = document.getElementById('usernameInput');
+    const linkInput = document.getElementById('linkInput');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    const settingsResultEl = document.getElementById('settingsResult');
+
+    function getCurrentAccountKey() {
+      let account = localStorage.getItem('loggedInReseller')
+        || sessionStorage.getItem('loggedInReseller');
+
+      // Support apps that store the logged-in user as JSON.
+      if (account) {
+        try {
+          const parsed = JSON.parse(account);
+          if (parsed && typeof parsed === 'object') {
+            account = parsed.username || parsed.userName || parsed.uid || parsed.id || parsed.email;
+          }
+        } catch (_) {}
+      }
+
+      if (typeof account !== 'string' || !account.trim()) return null;
+
+      // Firebase path-safe, stable key. Do not use a shared global profile node.
+      return account.trim().replace(/[.#$\/\[\]]/g, '_');
+    }
+
+    const accountKey = getCurrentAccountKey();
+    const accountProfileRef = accountKey
+      ? ref(db, 'BgfUpdateInformation/Reseller_Profiles/' + accountKey)
+      : null;
+
+    if (!accountKey) {
+      showResult(settingsResultEl, 'Login account not found. Please log in again.', 'error');
+      saveSettingsBtn.disabled = true;
+    } else {
+      onValue(accountProfileRef, (snapshot) => {
+        const settings = snapshot.val() || {};
+        usernameInput.value = settings.username || '';
+        linkInput.value = settings.link || '';
+      }, (error) => {
+        showResult(settingsResultEl, 'Error loading settings: ' + error.message, 'error');
+      });
+
+      saveSettingsBtn.addEventListener('click', () => {
+        const settings = {
+          username: usernameInput.value.trim(),
+          link: linkInput.value.trim()
+        };
+
+        update(accountProfileRef, settings)
+          .then(() => {
+            showResult(settingsResultEl, 'Profile saved for this account!', 'success');
+          })
+          .catch((error) => {
+            showResult(settingsResultEl, 'Error saving profile: ' + error.message, 'error');
+          });
+      });
+    }
+
+    function showResult(element, message, type) {
+      element.textContent = message;
+      element.className = `form-result ${type}`;
+      setTimeout(() => {
+        element.textContent = '';
+        element.className = 'form-result';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
